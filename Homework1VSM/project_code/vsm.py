@@ -1,14 +1,30 @@
-
 from collections import defaultdict
 from functools import reduce  
 import math
 import sys
+import os
 
-# 测试文档
-document_filenames = {0 : "documents/lotr.txt",
-                      1 : "documents/silmarillion.txt",
-                      2 : "documents/rainbows_end.txt",
-                      3 : "documents/the_hobbit.txt"}
+# 测试文档路径
+#Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
+Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
+folders=[f for f in  os.listdir(Newspath)] 
+print(folders)
+
+
+files=[]
+for folderName in  folders:
+    folderPath=os.path.join(Newspath, folderName)
+    files.append([f for f in os.listdir(folderPath)])
+
+#print(sum(len(files[i])for i in range(20)))
+
+document_filenames={}
+i=0
+for fo in range(len(folders)):
+    for fi in files[fo] :
+        #document_filenames[i].append(os.path.join(Newspath, os.path.join(folders[fo],fi)))
+        document_filenames.update({i:os.path.join(Newspath,os.path.join(folders[fo],fi))})
+        i+=1
 
 
 N = len(document_filenames)
@@ -41,7 +57,7 @@ def initialize_terms_and_postings():
    
     global dictionary, postings
     for id in document_filenames:
-        f = open(document_filenames[id],'r')
+        f = open(document_filenames[id],'r',encoding='gb18030',errors='ignore')
         document = f.read()
         f.close()
         terms = tokenize(document)
