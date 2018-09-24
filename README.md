@@ -1,2 +1,4 @@
-# DataMining
-该库为信息检索与数据挖掘课程作业提交所使用
+# Information retrieval and data mining
+The repository is used for information retrieval and data mining course submission. Belong yo devWangBin.
+Each sub folder contains an experimental project. Also the project task is described in the corresponding sub folder. 
+If there are any problems with the code, please point out, thank you. 
