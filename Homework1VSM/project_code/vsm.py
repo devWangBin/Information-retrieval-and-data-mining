@@ -5,11 +5,10 @@ import sys
 import os
 
 # 测试文档路径
-#Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
-Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
-folders=[f for f in  os.listdir(Newspath)] 
+Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
+#Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
+folders=[f for f in  os.listdir(Newspath)]
 print(folders)
-
 
 files=[]
 for folderName in  folders:
@@ -17,7 +16,6 @@ for folderName in  folders:
     files.append([f for f in os.listdir(folderPath)])
 
 #print(sum(len(files[i])for i in range(20)))
-
 document_filenames={}
 i=0
 for fo in range(len(folders)):
@@ -29,14 +27,11 @@ for fo in range(len(folders)):
 
 N = len(document_filenames)
 
-
 # 词典
 dictionary = set()
 
-
 # postings[term][id] 表示在文档 id 内term词的词频
 postings = defaultdict(dict)
-
 
 document_frequency = defaultdict(int)
 
@@ -44,14 +39,27 @@ document_frequency = defaultdict(int)
 length = defaultdict(float)
 
 # 用于tokenize的字符
-characters = " .,!#$%^&*();:\n\t\\\"?!{}[]<>"
+characters = " .,!#$%^&*();:\n\t\\\"?!{}[]<>-=~_/+-|"
 
 def main():
     initialize_terms_and_postings()
     initialize_document_frequencies()
-    initialize_lengths()
-    while True:
-        do_search()
+    #initialize_lengths()
+    p_dictionary()
+    #while True:
+        #do_search()
+
+def p_dictionary():
+    i = 0
+    fp=open(r"C:\Users\93568\Documents\GitHub\dic.txt",'w',encoding='utf-8')
+    fp.write("<<VAM_DICTIONARY>>"+'\n')
+    for term in dictionary:
+        fp.write(term+'  ')
+        i+=1
+        #fp.write(' ')
+        if i%200==0:
+            fp.write('\n')
+    fp.close()
 
 def initialize_terms_and_postings():
    
