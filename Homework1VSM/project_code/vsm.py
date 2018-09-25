@@ -80,31 +80,10 @@ def initialize_terms_and_postings():
 
 def tokenize(document):
     terms=document.lower()
-    terms=terms.replace("\n"," ")
-    terms=terms.replace("\t"," ")
-    terms=terms.replace(","," ")
-    terms=terms.replace(":"," ")
-    terms=terms.replace("."," ")
-    terms=terms.replace("("," ")
-    terms=terms.replace(")"," ")
-    terms=terms.replace("\\"," ")
-    terms=terms.replace("/"," ")
-    terms=terms.replace("\""," ")
-    terms=terms.replace("-"," ")
-    terms=terms.replace("~"," ")
-    terms=terms.replace("?"," ")
-    terms=terms.replace("="," ")
-    terms=terms.replace("!"," ")
-    terms=terms.replace("#"," ")
-    terms=terms.replace("*"," ")
-    terms=terms.replace("$"," ")
-    terms=terms.replace("["," ")
-    terms=terms.replace("]"," ")
-    terms=terms.replace(">"," ")
-    terms=terms.replace("<"," ")
+    terms=re.sub(r'\W|\d|_', " ",terms)
     terms=re.sub(r"\s{2,}"," ",terms)
     terms=terms.split()
-    return [term.strip(characters) for term in terms]
+    return [term for term in terms]
 
 def initialize_document_frequencies():
     
