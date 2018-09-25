@@ -6,8 +6,8 @@ import os
 import re
 
 # 测试文档路径
-#Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
-Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
+Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
+#Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
 folders=[f for f in  os.listdir(Newspath)]
 print(folders)
 
@@ -52,7 +52,7 @@ def main():
 
 def p_dictionary():
     i = 0
-    fp=open(r"C:\Users\93568\Documents\GitHub\dictest.txt",'w',encoding='utf-8')
+    fp=open(r"C:\Users\93568\Documents\GitHub\dictionary.txt",'w',encoding='utf-8') 
     fp.write("<<VAM_DICTIONARY>>"+'\n')
     for term in dictionary:
         fp.write(term+' ')
@@ -93,6 +93,15 @@ def tokenize(document):
     terms=terms.replace("-"," ")
     terms=terms.replace("~"," ")
     terms=terms.replace("?"," ")
+    terms=terms.replace("="," ")
+    terms=terms.replace("!"," ")
+    terms=terms.replace("#"," ")
+    terms=terms.replace("*"," ")
+    terms=terms.replace("$"," ")
+    terms=terms.replace("["," ")
+    terms=terms.replace("]"," ")
+    terms=terms.replace(">"," ")
+    terms=terms.replace("<"," ")
     terms=re.sub(r"\s{2,}"," ",terms)
     terms=terms.split()
     return [term.strip(characters) for term in terms]
