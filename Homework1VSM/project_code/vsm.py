@@ -7,7 +7,10 @@ import re
 
 # 测试文档路径
 Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
+
+#小规模测试文档路径
 #Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
+
 folders=[f for f in  os.listdir(Newspath)]
 print(folders)
 
@@ -25,9 +28,8 @@ for fo in range(len(folders)):
         document_filenames.update({i:os.path.join(Newspath,os.path.join(folders[fo],fi))})
         i+=1
 
-
+#文档总数
 N = len(document_filenames)
-
 # 词典
 dictionary = set()
 
@@ -36,19 +38,18 @@ postings = defaultdict(dict)
 
 document_frequency = defaultdict(int)
 
-# 文档总数
+# 文档重要性集合，用于查询计算相似性
 length = defaultdict(float)
 
 # 用于tokenize的字符
-characters = " .,!#$%^&*();:\n\t\\\"?!{}[]<>+/|_"
-
+#characters = " .,!#$%^&*();:\n\t\\\"?!{}[]<>+/|_"
 def main():
     initialize_terms_and_postings()
     initialize_document_frequencies()
-    #initialize_lengths()
+    initialize_lengths()
     p_dictionary()
-    #while True:
-        #do_search()
+    while True:
+        do_search()
 
 def p_dictionary():
     i = 0
@@ -57,27 +58,26 @@ def p_dictionary():
     for term in dictionary:
         fp.write(term+' ')
         i+=1
-        #fp.write(' ')
         if i%200==0:
             fp.write('\n')
     fp.close()
+    #print(postings)
 
 def initialize_terms_and_postings():
-   
     global dictionary, postings
     for id in document_filenames:
         f = open(document_filenames[id],'r',encoding='utf-8',errors='ignore')
         document = f.read()
         f.close()
         terms = tokenize(document)
+        d_tnum=len(terms)#预处理后每篇文档的总词数
+        print(d_tnum)
         unique_terms = set(terms)
-        dictionary = dictionary.union(unique_terms)
+        dictionary = dictionary.union(unique_terms)#并入总词典
         for term in unique_terms:
-            postings[term][id] = terms.count(term) # the value is the
-                                                   # frequency of the
-                                                   # term in the
-                                                   # document
-
+            #postings[term][id] = terms.count(term)
+            postings[term][id] = (terms.count(term))/d_tnum
+            # the value is the frequency of term in the document
 def tokenize(document):
     terms=document.lower()
     terms=re.sub(r'\W|\d|_', " ",terms)
