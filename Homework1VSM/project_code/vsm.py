@@ -3,10 +3,11 @@ from functools import reduce
 import math
 import sys
 import os
+import re
 
 # 测试文档路径
-Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
-#Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
+#Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
+Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
 folders=[f for f in  os.listdir(Newspath)]
 print(folders)
 
@@ -39,7 +40,7 @@ document_frequency = defaultdict(int)
 length = defaultdict(float)
 
 # 用于tokenize的字符
-characters = " .,!#$%^&*();:\n\t\\\"?!{}[]<>-=~_/+-|"
+characters = " .,!#$%^&*();:\n\t\\\"?!{}[]<>+/|_"
 
 def main():
     initialize_terms_and_postings()
@@ -51,10 +52,10 @@ def main():
 
 def p_dictionary():
     i = 0
-    fp=open(r"C:\Users\93568\Documents\GitHub\dic.txt",'w',encoding='utf-8')
+    fp=open(r"C:\Users\93568\Documents\GitHub\dictest.txt",'w',encoding='utf-8')
     fp.write("<<VAM_DICTIONARY>>"+'\n')
     for term in dictionary:
-        fp.write(term+'  ')
+        fp.write(term+' ')
         i+=1
         #fp.write(' ')
         if i%200==0:
@@ -65,7 +66,7 @@ def initialize_terms_and_postings():
    
     global dictionary, postings
     for id in document_filenames:
-        f = open(document_filenames[id],'r',encoding='gb18030',errors='ignore')
+        f = open(document_filenames[id],'r',encoding='utf-8',errors='ignore')
         document = f.read()
         f.close()
         terms = tokenize(document)
@@ -78,8 +79,22 @@ def initialize_terms_and_postings():
                                                    # document
 
 def tokenize(document):
-   
-    terms = document.lower().split()
+    terms=document.lower()
+    terms=terms.replace("\n"," ")
+    terms=terms.replace("\t"," ")
+    terms=terms.replace(","," ")
+    terms=terms.replace(":"," ")
+    terms=terms.replace("."," ")
+    terms=terms.replace("("," ")
+    terms=terms.replace(")"," ")
+    terms=terms.replace("\\"," ")
+    terms=terms.replace("/"," ")
+    terms=terms.replace("\""," ")
+    terms=terms.replace("-"," ")
+    terms=terms.replace("~"," ")
+    terms=terms.replace("?"," ")
+    terms=re.sub(r"\s{2,}"," ",terms)
+    terms=terms.split()
     return [term.strip(characters) for term in terms]
 
 def initialize_document_frequencies():
