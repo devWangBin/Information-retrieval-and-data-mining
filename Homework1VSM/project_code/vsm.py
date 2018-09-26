@@ -19,28 +19,22 @@ for folderName in  folders:
     folderPath=os.path.join(Newspath, folderName)
     files.append([f for f in os.listdir(folderPath)])
 
-#print(sum(len(files[i])for i in range(20)))
 document_filenames={}
 i=0
 for fo in range(len(folders)):
-    for fi in files[fo] :
-        #document_filenames[i].append(os.path.join(Newspath, os.path.join(folders[fo],fi)))
+    for fi in files[fo]:       
         document_filenames.update({i:os.path.join(Newspath,os.path.join(folders[fo],fi))})
         i+=1
-
 #文档总数
 N = len(document_filenames)
 # 词典
 dictionary = set()
-
 # postings[term][id] 表示在文档 id 内term词的词频
 postings = defaultdict(dict)
-
+#文档词频
 document_frequency = defaultdict(int)
-
 # 文档重要性集合，用于查询计算相似性
 length = defaultdict(float)
-
 # 用于tokenize的字符
 #characters = " .,!#$%^&*();:\n\t\\\"?!{}[]<>+/|_"
 def main():
@@ -86,13 +80,11 @@ def tokenize(document):
     return [term for term in terms]
 
 def initialize_document_frequencies():
-    
     global document_frequency
     for term in dictionary:
         document_frequency[term] = len(postings[term])
 
 def initialize_lengths():
-  
     global length
     for id in document_filenames:
         l = 0
@@ -115,8 +107,7 @@ def inverse_document_frequency(term):
         return 0.0
 
 def do_search():
-    
-    
+       
     query = tokenize(input("Search query >> "))
     if query == []:
         sys.exit()
