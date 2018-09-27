@@ -42,10 +42,10 @@ length = defaultdict(float)
 def main():
     initialize_terms_and_postings()
     initialize_document_frequencies()
-    #initialize_lengths()
+    initialize_lengths()
     p_dictionary()
-    #while True:
-     #   do_search()
+    while True:
+        do_search()
 
 def p_dictionary():
     i = 0
