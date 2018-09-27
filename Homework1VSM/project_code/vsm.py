@@ -1,3 +1,5 @@
+from textblob import TextBlob
+from textblob import Word
 from collections import defaultdict
 from functools import reduce  
 import math
@@ -40,14 +42,14 @@ length = defaultdict(float)
 def main():
     initialize_terms_and_postings()
     initialize_document_frequencies()
-    initialize_lengths()
+    #initialize_lengths()
     p_dictionary()
-    while True:
-        do_search()
+    #while True:
+     #   do_search()
 
 def p_dictionary():
     i = 0
-    fp=open(r"C:\Users\93568\Documents\GitHub\dictionary.txt",'w',encoding='utf-8') 
+    fp=open(r"C:\Users\93568\Documents\GitHub\dictionary02.txt",'w',encoding='utf-8') 
     fp.write("<<VAM_DICTIONARY>>"+'\n')
     for term in dictionary:
         fp.write(term+' ')
@@ -65,19 +67,31 @@ def initialize_terms_and_postings():
         f.close()
         terms = tokenize(document)
         d_tnum=len(terms)#预处理后每篇文档的总词数
-        print(d_tnum)
+        #print(d_tnum)
         unique_terms = set(terms)
         dictionary = dictionary.union(unique_terms)#并入总词典
         for term in unique_terms:
-            #postings[term][id] = terms.count(term)
-            postings[term][id] = (terms.count(term))/d_tnum
+            c_term=terms.count(term)
+            #postings[term][id] = (terms.count(term))/d_tnum
+            if c_term>0:
+                postings[term][id]=1+math.log(c_term)
+            else:
+                postings[term][id]=0
             # the value is the frequency of term in the document
 def tokenize(document):
-    terms=document.lower()
-    terms=re.sub(r'\W|\d|_', " ",terms)
-    terms=re.sub(r"\s{2,}"," ",terms)
-    terms=terms.split()
-    return [term for term in terms]
+    
+    document=document.lower()
+    #document=re.sub(r'', " ",document)
+    document=re.sub(r"\W|\d|_|\s{2,}"," ",document)
+    terms=TextBlob(document).words.singularize()
+    
+    result=[]
+    for word in terms:
+        expected_str = Word(word)
+        expected_str = expected_str.lemmatize("v")
+        result.append(expected_str)
+    return result 
+    
 
 def initialize_document_frequencies():
     global document_frequency
