@@ -15,13 +15,13 @@ doc2_filenames={}
 doc3_filenames={}
 doc4_filenames={}
 doc5_filenames={}
-# postings[term][id] 表示在文档 id 内term词的词频
+# postings[term] 表示在类别内term词的词频
 postings1 = defaultdict(dict)
 postings2 = defaultdict(dict)
 postings3 = defaultdict(dict)
 postings4 = defaultdict(dict)
 postings5 = defaultdict(dict)
-
+#每个类别的总词数
 num_c1=0
 num_c2=0
 num_c3=0
