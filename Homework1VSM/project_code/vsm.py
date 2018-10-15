@@ -8,10 +8,10 @@ import os
 import re
 
 # 测试文档路径
-Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
+#Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
 
 #小规模测试文档路径
-#Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
+Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
 
 folders=[f for f in  os.listdir(Newspath)]
 print(folders)
@@ -23,6 +23,7 @@ for folderName in  folders:
 
 document_filenames={}
 i=0
+
 for fo in range(len(folders)):
     for fi in files[fo]:       
         document_filenames.update({i:os.path.join(Newspath,os.path.join(folders[fo],fi))})
@@ -49,7 +50,7 @@ def main():
 
 def p_dictionary():
     i = 0
-    fp=open(r"C:\Users\93568\Documents\GitHub\dictionary02.txt",'w',encoding='utf-8') 
+    fp=open(r"C:\Users\93568\Documents\GitHub\dic.txt",'w',encoding='utf-8') 
     fp.write("<<VAM_DICTIONARY>>"+'\n')
     for term in dictionary:
         fp.write(term+' ')
@@ -57,6 +58,7 @@ def p_dictionary():
         if i%200==0:
             fp.write('\n')
     fp.close()
+    print(postings)
     #print(postings)
 
 def initialize_terms_and_postings():
@@ -72,6 +74,7 @@ def initialize_terms_and_postings():
         dictionary = dictionary.union(unique_terms)#并入总词典
         for term in unique_terms:
             c_term=terms.count(term)
+            
             #postings[term][id] = (terms.count(term))/d_tnum
             if c_term>0:
                 postings[term][id]=1+math.log(c_term)
