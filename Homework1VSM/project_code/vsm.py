@@ -10,7 +10,7 @@ import re
 # 测试文档路径
 #Newspath=(r"C:\Users\93568\Documents\GitHub\DataMining\Homework1VSM\20news-18828")
 
-#小规模测试文档路径
+#小规模测试的文档路径
 Newspath=(r"C:\Users\93568\Documents\GitHub\0123")
 
 folders=[f for f in  os.listdir(Newspath)]
