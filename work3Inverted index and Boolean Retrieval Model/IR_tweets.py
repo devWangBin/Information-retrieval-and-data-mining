@@ -16,8 +16,7 @@ postings = defaultdict(dict)
 
 def merge2_and(term1,term2):
     global postings
-    answer = []
-    
+    answer = []  
     if (term1 not in postings) or (term2 not in postings):
         return answer      
     else:
@@ -54,26 +53,18 @@ def merge2_or(term1,term2):
 def merge2_not(term1,term2):
     answer=[]
     if term1 not in postings:
-        answer.append("not find!")       
+        return answer      
     elif term2 not in postings:
         answer = postings[term1]
+        return answer
         
     else:
         answer = postings[term1]
-        i = len(answer)
-        j = len(postings[term2])
-        x=0
-        y=0
-        while x<i and y<j:
-            if answer[x]==postings[term2][y]:                
-                y+=1
-                answer.pop(x)
-            elif answer[x] < postings[term2][y]:
-                x+=1
-            else:
-                y+=1
-                
-    return answer
+        ANS = []
+        for ter in answer:
+            if ter not in postings[term2]:
+                ANS.append(ter)
+        return ANS
 
 def merge3_and(term1,term2,term3):
     Answer = []
@@ -184,7 +175,9 @@ def tokenize_tweet(document):
     d = document.rindex("errorcode")
     e = document.index("text")
     f = document.index("timestr")-3  
+    #提取用户名、tweet内容和tweetid三部分主要信息
     document = document[c:d]+document[a:b]+document[e:f]
+    #print(document)
     terms=TextBlob(document).words.singularize()
       
     result=[]
@@ -199,13 +192,14 @@ def tokenize_tweet(document):
 def get_postings():
     
     global postings
-    f = open(r"C:\Users\93568\Documents\GitHub\DataMining\work3Inverted index and Boolean Retrieval Model\0123.txt")  
+    f = open(r"C:\Users\93568\Documents\GitHub\DataMining\work3Inverted index and Boolean Retrieval Model\tweets.txt")  
     lines = f.readlines()#读取全部内容
 
     for line in lines:
        line = tokenize_tweet(line)
+       #print(line)
        tweetid = line[0]
-       line.pop(0);
+       line.pop(0)
        unique_terms = set(line)
        for te in unique_terms:
            if te in postings.keys():                         
@@ -214,7 +208,7 @@ def get_postings():
                postings[te] = [tweetid]
     #按字典序对postings进行升序排序,但返回的是列表，失去了键值的信息
     #postings = sorted(postings.items(),key = lambda asd:asd[0],reverse=False)       
-    print(len(postings))
+    #print(postings)
     
     
     
@@ -227,13 +221,16 @@ def do_search():
     if len(terms)==3:
         #A and B
         if terms[1]=="and":
-            answer = merge2_and(terms[0],terms[2])          
+            answer = merge2_and(terms[0],terms[2])   
+            print(answer)
         #A or B       
         elif terms[1]=="or":
-            answer = merge2_or(terms[0],terms[2])           
+            answer = merge2_or(terms[0],terms[2])  
+            print(answer)
         #A not B    
         elif terms[1]=="not":
             answer = merge2_not(terms[0],terms[2])
+            print(answer)
         #输入的三个词格式不对    
         else:
             print("input wrong!")
@@ -251,6 +248,7 @@ def do_search():
         elif (terms[1]=="and") and (terms[3]=="or"):
             answer = merge3_and_or(terms[0],terms[2],terms[4])
             print(answer)
+        #(A or B) and C
         elif (terms[1]=="or") and (terms[3]=="and"):
             answer = merge3_or_and(terms[0],terms[2],terms[4])
             print(answer)
