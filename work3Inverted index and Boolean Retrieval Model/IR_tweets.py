@@ -16,17 +16,123 @@ postings = defaultdict(dict)
 
 def merge2_and(term1,term2):
     global postings
+    answer = []
+    
     if (term1 not in postings) or (term2 not in postings):
-        print("not find!")
-        return
-#    else:
-#        posyings[term1][]
+        return answer      
+    else:
+        i = len(postings[term1])
+        j = len(postings[term2])
+        x=0
+        y=0
+        while x<i and y<j:
+            if postings[term1][x]==postings[term2][y]:
+                answer.append(postings[term1][x])
+                x+=1
+                y+=1
+            elif postings[term1][x] < postings[term2][y]:
+                x+=1
+            else:
+                y+=1            
+        return answer                        
 
 def merge2_or(term1,term2):
-    return 0
+    answer=[]
+    if (term1 not in postings)and(term2 not in postings):
+        answer = []      
+    elif term2 not in postings:
+        answer = postings[term1]
+    elif term1 not in postings:
+         answer = postings[term2]
+    else:
+        answer = postings[term1]
+        for item in postings[term2]:
+            if item not in answer:
+                answer.append(item)              
+    return answer
 
 def merge2_not(term1,term2):
-    return 0
+    answer=[]
+    if term1 not in postings:
+        answer.append("not find!")       
+    elif term2 not in postings:
+        answer = postings[term1]
+        
+    else:
+        answer = postings[term1]
+        i = len(answer)
+        j = len(postings[term2])
+        x=0
+        y=0
+        while x<i and y<j:
+            if answer[x]==postings[term2][y]:                
+                y+=1
+                answer.pop(x)
+            elif answer[x] < postings[term2][y]:
+                x+=1
+            else:
+                y+=1
+                
+    return answer
+
+def merge3_and(term1,term2,term3):
+    Answer = []
+    if term3 not in postings:
+        return Answer   
+    else:
+        Answer = merge2_and(term1,term2)
+        if Answer==[]:
+            return Answer
+        ans = []
+        i = len(Answer)
+        j = len(postings[term3])
+        x=0
+        y=0
+        while x<i and y<j:
+            if Answer[x]==postings[term3][y]:
+                ans.append(Answer[x])
+                x+=1
+                y+=1
+            elif Answer[x] < postings[term3][y]:
+                x+=1
+            else:
+                y+=1
+        
+        return ans
+
+def merge3_or(term1,term2,term3):
+    Answer = []
+    Answer = merge2_or(term1,term2);
+    if term3 not in postings:
+        return Answer
+    else:
+        if Answer ==[]:
+            Answer = postings[term3]
+        else:
+            for item in postings[term3]:
+                if item not in Answer:
+                    Answer.append(item)
+        return Answer
+
+def merge3_and_or(term1,term2,term3):
+    Answer = []
+    Answer = merge2_and(term1,term2)
+    if term3 not in postings:
+        return Answer
+    else:
+        if Answer==[]:
+            Answer = postings[term3]
+            return Answer
+        else:
+            for item in postings[term3]:
+                if item not in Answer:
+                    Answer.append(item)
+            return Answer
+
+def do_rankSearch(terms):
+    Answer = []
+    return Answer
+
 
 def token(doc):
     doc = doc.lower()
@@ -69,46 +175,61 @@ def get_postings():
     for line in lines:
        line = tokenize_tweet(line)
        tweetid = line[0]
-       #print(tweetid)
        line.pop(0);
        unique_terms = set(line)
        for te in unique_terms:
-           if te in postings:                         
+           if te in postings.keys():                         
                postings[te].append(tweetid)           
            else:            
                postings[te] = [tweetid]
-    #按字典序对postings进行升序排序
-    postings = sorted(postings.items(),key = lambda asd:asd[0],reverse=False)       
+    #按字典序对postings进行升序排序,但返回的是列表，失去了键值的信息
+    #postings = sorted(postings.items(),key = lambda asd:asd[0],reverse=False)       
     print(len(postings))
+    
     
     
 def do_search():
     terms = token(input("Search query >> "))
     if terms == []:
-        sys.exit()
+        sys.exit()  
+    #搜索的结果答案   
+    answer = []
     
     if len(terms)==3:
+        #A and B
         if terms[1]=="and":
-            merge2_and(terms[0],terms[2])
-            return "going well! and2"
+            answer = merge2_and(terms[0],terms[2])          
+        #A or B       
         elif terms[1]=="or":
-            merge2_or(terms[0],terms[2])
-            return "going well! or2"
+            answer = merge2_or(terms[0],terms[2])           
+        #A not B    
         elif terms[1]=="not":
-            merge2_not(terms[0],terms[2])
-            return "going well! not2"
+            answer = merge2_not(terms[0],terms[2])
+        #输入的三个词格式不对    
         else:
-            return "input wrong!"
+            print("input wrong!")
         
     elif len(terms)==5:
-        return "going well!"
-    
-    
+        #A and B and C
+        if (terms[1]=="and") and (terms[3]=="and"):
+            answer = merge3_and(terms[0],terms[2],terms[4])
+        #A or B or C
+        elif (terms[1]=="or") and (terms[3]=="or"):
+            answer = merge3_or(terms[0],terms[2],terms[4])
+        #(A and B) or C
+        elif (terms[1]=="and") and (terms[3]=="or"):
+            answer = merge3_and_or(terms[0],terms[2],terms[4])
+        else:
+            print("More format is not supported now!")
+    #进行自然语言的排序查询，返回按相似度排序的最靠前的若干个结果
+    else:
+        answer = do_rankSearch(terms)
+    print(answer)
 
 def main():
     get_postings()
-    #while True:
-        #print(do_search())
+    while True:
+        do_search()
 
 
 if __name__ == "__main__":
