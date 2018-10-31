@@ -129,8 +129,38 @@ def merge3_and_or(term1,term2,term3):
                     Answer.append(item)
             return Answer
 
-def do_rankSearch(terms):
+def merge3_or_and(term1,term2,term3):
     Answer = []
+    Answer = merge2_or(term1,term2)
+    if (term3 not in postings) or (Answer==[]):
+        return Answer
+    else:
+        ans = []
+        i = len(Answer)
+        j = len(postings[term3])
+        x=0
+        y=0
+        while x<i and y<j:
+            if Answer[x]==postings[term3][y]:
+                ans.append(Answer[x])
+                x+=1
+                y+=1
+            elif Answer[x] < postings[term3][y]:
+                x+=1
+            else:
+                y+=1       
+        return ans       
+
+def do_rankSearch(terms):
+    Answer = defaultdict(dict)
+    for item in terms:
+        if item in postings:
+            for tweetid in postings[item]:
+                if tweetid in Answer:
+                    Answer[tweetid]+=1
+                else:
+                    Answer[tweetid] = 1
+    Answer = sorted(Answer.items(),key = lambda asd:asd[1],reverse=True)
     return Answer
 
 
@@ -193,7 +223,6 @@ def do_search():
     if terms == []:
         sys.exit()  
     #搜索的结果答案   
-    answer = []
     
     if len(terms)==3:
         #A and B
@@ -213,18 +242,27 @@ def do_search():
         #A and B and C
         if (terms[1]=="and") and (terms[3]=="and"):
             answer = merge3_and(terms[0],terms[2],terms[4])
+            print(answer)
         #A or B or C
         elif (terms[1]=="or") and (terms[3]=="or"):
             answer = merge3_or(terms[0],terms[2],terms[4])
+            print(answer)
         #(A and B) or C
         elif (terms[1]=="and") and (terms[3]=="or"):
             answer = merge3_and_or(terms[0],terms[2],terms[4])
+            print(answer)
+        elif (terms[1]=="or") and (terms[3]=="and"):
+            answer = merge3_or_and(terms[0],terms[2],terms[4])
+            print(answer)
         else:
             print("More format is not supported now!")
     #进行自然语言的排序查询，返回按相似度排序的最靠前的若干个结果
     else:
+        leng = len(terms)
         answer = do_rankSearch(terms)
-    print(answer)
+        print ("[Rank_Score: Tweetid]")
+        for (tweetid,score) in answer:
+            print (str(score/leng)+": "+tweetid)
 
 def main():
     get_postings()
