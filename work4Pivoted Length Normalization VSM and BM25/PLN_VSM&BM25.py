@@ -6,6 +6,7 @@ Created on Thu Nov  1 21:44:33 2018
 """
 
 import sys
+import math
 from functools import reduce  # py3
 from textblob import TextBlob
 from textblob import Word
@@ -22,8 +23,10 @@ def main():
     get_postings_dl()
     initialize_document_frequencies()
     initialize_avdl()
-    print(document_lengths) 
-    print(avdl)
+    #print(document_lengths) 
+    print("平均tweet 长度为："+str(avdl))
+    while True:   
+        do_search()
     
 
 def token(doc):
@@ -102,14 +105,55 @@ def do_search():
     unique_query = set(query)
     #避免遍历所有的tweet，可先提取出有相关性的tweetid，tweet中包含查询的关键词之一便可认为相关
     relevant_tweetids = Union([set(postings[term].keys()) for term in unique_query])
+    
+    #print(relevant_tweetids)
+    
     if not relevant_tweetids:
         print ("No tweets matched any query terms.")
     else:
-        for term in unique_query:
-            if term in postings:
-                F_query_doc = query.count(term)
+        scores1 = sorted([(id,similarity_PLN(query,id))
+                         for id in relevant_tweetids],
+                        key=lambda x: x[1],
+                        reverse=True)
+        scores2 = sorted([(id,similarity_BM25(query,id))
+                         for id in relevant_tweetids],
+                        key=lambda x: x[1],
+                        reverse=True)
+    print ("<<<<<Score(PLN)--Tweeetid>>>>>")
+    for (id,score) in scores1:
+        print (str(score)+": "+id)
+    print ("<<<<<Score(BM25)--Tweeetid>>>>>")
+    for (id,score) in scores2:
+        print (str(score)+": "+id)
+
+def similarity_PLN(query,id):
+    global postings,avdl
+    fenmu =1 - 0.1 + 0.1*(document_lengths[id]/avdl)
+    similarity = 0.0
+    unique_query = set(query)
+    for term in unique_query:
+        if (term in postings) and (id in postings[term].keys()):
+            #使用ln(1+ln(C(w,d)+1))后发现相关性的分数都为负数很小
+            similarity += (query.count(term)*(math.log(math.log(postings[term][id] + 1) + 1))*math.log((document_numbers+1)/document_frequency[term]))/fenmu            
+        
+    return similarity
+
+def similarity_BM25(query,id):
+    global postings,avdl
+    fenmu =1 - 0.1 + 0.1*(document_lengths[id]/avdl)
+    k = 1
+    similarity = 0.0
     
-    print(query)
+    unique_query = set(query)
+    for term in unique_query:
+        if (term in postings) and (id in postings[term].keys()):
+            C_wd = postings[term][id]
+            #使用ln(1+ln(C(w,d)+1))后发现相关性的分数都为负数很小
+            similarity += (query.count(term)*(k+1)*C_wd*math.log((document_numbers+1)/document_frequency[term]))/(k*fenmu+C_wd)            
+        
+    return similarity
+
+
 
 def Union(sets):    
     return reduce(set.union, [s for s in sets])
