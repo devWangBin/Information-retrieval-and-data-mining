@@ -23,7 +23,9 @@ def main():
     get_postings_dl()
     initialize_document_frequencies()
     initialize_avdl()
+    #print(postings)
     #print(document_lengths) 
+    
     print("平均tweet 长度为："+str(avdl))
     while True:   
         do_search()
@@ -65,7 +67,7 @@ def tokenize_tweet(document):
 def get_postings_dl():
     
     global postings,document_lengths
-    f = open(r"C:\Users\93568\Documents\GitHub\DataMining\work4Pivoted Length Normalization VSM and BM25\data_tweets\test.txt")  
+    f = open(r"C:\Users\93568\Documents\GitHub\DataMining\work4Pivoted Length Normalization VSM and BM25\data_tweets\tweets.txt")  
     lines = f.readlines()#读取全部内容
 
     for line in lines:
@@ -93,8 +95,6 @@ def initialize_avdl():
         count += document_lengths[twid]
     avdl = count/len(document_lengths)
 
-def count_weight(term):
-    return 0
 
 def do_search():
     
@@ -120,9 +120,11 @@ def do_search():
                         key=lambda x: x[1],
                         reverse=True)
     print ("<<<<<Score(PLN)--Tweeetid>>>>>")
+    print("PLN一共有"+str(len(scores1))+"条相关tweet！")
     for (id,score) in scores1:
         print (str(score)+": "+id)
     print ("<<<<<Score(BM25)--Tweeetid>>>>>")
+    print("BM25一共有"+str(len(scores2))+"条相关tweet！")
     for (id,score) in scores2:
         print (str(score)+": "+id)
 
@@ -154,21 +156,9 @@ def similarity_BM25(query,id):
     return similarity
 
 
-
 def Union(sets):    
     return reduce(set.union, [s for s in sets])
 
 if __name__ == "__main__":
     main()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
