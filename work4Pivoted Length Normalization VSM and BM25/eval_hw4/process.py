@@ -36,6 +36,7 @@ def filter_out_of_set():
     out_file = 'qrels.txt'
     sim_file = 'result.txt'
     tweet_id_set = read_json_file(id_file)
+    #print(tweet_id_set)
     # remove unrelated ids
     # filer_qrels_file(in_file, out_file, tweet_id_set)
     # generate simulate test_set

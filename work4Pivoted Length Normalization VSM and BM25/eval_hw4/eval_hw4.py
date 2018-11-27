@@ -37,6 +37,7 @@ def MAP_eval(qrels_dict, test_dict, k = 100):
         #print(len(true_list))
         #length_use = min(k, len(test_result), len(true_list))
         length_use = min(k, len(test_result))
+        
         if length_use <= 0:
             print('query ', query, ' not found test list')
             return []
@@ -91,12 +92,14 @@ def evaluation():
     # qrels_dict = {query_id:{doc_id:gain, doc_id:gain, ...}, ...}
     qrels_dict = generate_tweetid_gain(file_qrels_path)
     # ur result, format is in function read_tweetid_test, or u can write by ur own
-    file_test_path = 'result.txt'
+    file_test_path = 'my_result_BM25AndPLN.txt'
     # test_dict = {query_id:[doc_id, doc_id, ...], ...}
     test_dict = read_tweetid_test(file_test_path)
+    
     MAP = MAP_eval(qrels_dict, test_dict, k)
     print('MAP', ' = ', MAP, sep='')
     NDCG = NDCG_eval(qrels_dict, test_dict, k)
     print('NDCG', ' = ', NDCG, sep='')
+    
 if __name__ == '__main__':
     evaluation()

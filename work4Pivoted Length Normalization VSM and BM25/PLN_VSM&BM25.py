@@ -27,8 +27,13 @@ def main():
     #print(document_lengths) 
     
     print("平均tweet 长度为："+str(avdl))
-    while True:   
-        do_search()
+    #可以修改do_search方法中的返回数据，得到使用不同模型的result
+    #my_result_PLN.txt/my_result_BM25.txt/
+    result_name = "my_result_BM25AndPLN.txt"
+    
+    get_result(result_name)
+    
+    
     
 
 def token(doc):
@@ -40,6 +45,8 @@ def token(doc):
         expected_str = Word(word)
         expected_str = expected_str.lemmatize("v")     
         result.append(expected_str)
+    
+    print(result)
     return result         
 
 def tokenize_tweet(document):
@@ -63,11 +70,36 @@ def tokenize_tweet(document):
             result.append(expected_str)
     return result
 
+def get_queries():
+    #输入为qrels2014.txt
+    #输出为对于查询token后的结果:id + 查询字符串
+    queries = {}
+    keyid = 171
+    
+    fq = open(r"C:\Users\93568\Documents\GitHub\DataMining\work4Pivoted Length Normalization VSM and BM25\data\qrels2014.txt")
+    lines = fq.readlines()
+    
+    for line in lines:
+        
+        index1 = line.find("<query>")
+        
+        if index1>=0:
+            #得到<query>和</query>之间的查询内容
+            index1 += 8
+            index2 = line.find("</query>")
+            #print(line[index1:index2])
+            
+            #添加到queries字典
+            queries[keyid] = line[index1:index2]
+            keyid+=1
+    
+    return queries
+
 
 def get_postings_dl():
     
     global postings,document_lengths
-    f = open(r"C:\Users\93568\Documents\GitHub\DataMining\work4Pivoted Length Normalization VSM and BM25\data_tweets\tweets.txt")  
+    f = open(r"C:\Users\93568\Documents\GitHub\DataMining\work4Pivoted Length Normalization VSM and BM25\data\tweets.txt")  
     lines = f.readlines()#读取全部内容
 
     for line in lines:
@@ -96,9 +128,31 @@ def initialize_avdl():
     avdl = count/len(document_lengths)
 
 
-def do_search():
+
+def get_result(file_name):
     
-    query = token(input("Search query >> "))
+    with open(file_name, 'w', encoding='utf-8') as f_out:
+       
+        Quaries = get_queries()        
+        qkeys = Quaries.keys()
+        
+        for key in qkeys:
+            
+            q_result = do_search(Quaries[key])
+            
+            for tweetid in q_result:
+                
+                f_out.write(str(key)+' '+tweetid+'\n')
+    
+
+
+def do_search(query):
+    
+    result = []#返回对于query的所有tweetid排序后的列表
+    
+    query = token(query)
+    
+    
     if query == []:
         sys.exit()
     
@@ -109,24 +163,40 @@ def do_search():
     #print(relevant_tweetids)
     
     if not relevant_tweetids:
-        print ("No tweets matched any query terms.")
+        print ("No tweets matched any query terms for")
+        print(query)
     else:
-        scores1 = sorted([(id,similarity_PLN(query,id))
+        #PLN
+#        scores1 = sorted([(id,similarity_PLN(query,id))
+#                         for id in relevant_tweetids],
+#                        key=lambda x: x[1],
+#                        reverse=True)
+        #BM25
+#        scores2 = sorted([(id,similarity_BM25(query,id))
+#                         for id in relevant_tweetids],
+#                        key=lambda x: x[1],
+#                        reverse=True)
+        
+        #PLN+BM25
+        scores3 = sorted([(id,similarity_BM25(query,id)+similarity_PLN(query,id))
                          for id in relevant_tweetids],
                         key=lambda x: x[1],
                         reverse=True)
-        scores2 = sorted([(id,similarity_BM25(query,id))
-                         for id in relevant_tweetids],
-                        key=lambda x: x[1],
-                        reverse=True)
-    print ("<<<<<Score(PLN)--Tweeetid>>>>>")
-    print("PLN一共有"+str(len(scores1))+"条相关tweet！")
-    for (id,score) in scores1:
-        print (str(score)+": "+id)
-    print ("<<<<<Score(BM25)--Tweeetid>>>>>")
-    print("BM25一共有"+str(len(scores2))+"条相关tweet！")
-    for (id,score) in scores2:
-        print (str(score)+": "+id)
+      
+        for (id,score) in scores3:
+        
+            result.append(id)
+    
+    return result
+#    print ("<<<<<Score(PLN)--Tweeetid>>>>>")
+#    print("PLN一共有"+str(len(scores1))+"条相关tweet！")
+#    for (id,score) in scores1:
+#        print (str(score)+": "+id)
+#        
+#    print ("<<<<<Score(BM25)--Tweeetid>>>>>")
+#    print("BM25一共有"+str(len(scores2))+"条相关tweet！")
+#    for (id,score) in scores2:
+#        print (str(score)+": "+id)
 
 def similarity_PLN(query,id):
     global postings,avdl
