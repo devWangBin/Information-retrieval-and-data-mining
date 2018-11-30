@@ -92,7 +92,7 @@ def evaluation():
     # qrels_dict = {query_id:{doc_id:gain, doc_id:gain, ...}, ...}
     qrels_dict = generate_tweetid_gain(file_qrels_path)
     # ur result, format is in function read_tweetid_test, or u can write by ur own
-    file_test_path = 'my_result_BM25AndPLN.txt'
+    file_test_path = 'my_result_PLN_BM25.txt'
     # test_dict = {query_id:[doc_id, doc_id, ...], ...}
     test_dict = read_tweetid_test(file_test_path)
     

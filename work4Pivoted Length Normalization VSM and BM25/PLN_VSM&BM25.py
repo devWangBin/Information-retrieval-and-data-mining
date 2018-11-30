@@ -29,7 +29,7 @@ def main():
     print("平均tweet 长度为："+str(avdl))
     #可以修改do_search方法中的返回数据，得到使用不同模型的result
     #my_result_PLN.txt/my_result_BM25.txt/
-    result_name = "my_result_BM25AndPLN.txt"
+    result_name = "my_result_PLN_BM25.txt"
     
     get_result(result_name)
     
@@ -46,8 +46,7 @@ def token(doc):
         expected_str = expected_str.lemmatize("v")     
         result.append(expected_str)
     
-    print(result)
-    return result         
+    return result    
 
 def tokenize_tweet(document):
     global uselessTerm
@@ -68,6 +67,7 @@ def tokenize_tweet(document):
         expected_str = expected_str.lemmatize("v")
         if expected_str not in uselessTerm:
             result.append(expected_str)
+
     return result
 
 def get_queries():
@@ -152,7 +152,6 @@ def do_search(query):
     
     query = token(query)
     
-    
     if query == []:
         sys.exit()
     
@@ -170,21 +169,21 @@ def do_search(query):
 #        scores1 = sorted([(id,similarity_PLN(query,id))
 #                         for id in relevant_tweetids],
 #                        key=lambda x: x[1],
-#                        reverse=True)
+#                        reverse=False)
         #BM25
 #        scores2 = sorted([(id,similarity_BM25(query,id))
 #                         for id in relevant_tweetids],
 #                        key=lambda x: x[1],
-#                        reverse=True)
+#                        reverse=False)
         
         #PLN+BM25
         scores3 = sorted([(id,similarity_BM25(query,id)+similarity_PLN(query,id))
                          for id in relevant_tweetids],
                         key=lambda x: x[1],
-                        reverse=True)
+                        reverse=False)
       
         for (id,score) in scores3:
-        
+
             result.append(id)
     
     return result
@@ -206,15 +205,15 @@ def similarity_PLN(query,id):
     for term in unique_query:
         if (term in postings) and (id in postings[term].keys()):
             #使用ln(1+ln(C(w,d)+1))后发现相关性的分数都为负数很小
-            similarity += (query.count(term)*(math.log(math.log(postings[term][id] + 1) + 1))*math.log((document_numbers+1)/document_frequency[term]))/fenmu            
+            similarity += ((query.count(term))*(math.log(math.log(postings[term][id] + 1) + 1))*math.log((document_numbers+1)/document_frequency[term]))/fenmu            
         
     return similarity
 
 def similarity_BM25(query,id):
     global postings,avdl
-    fenmu =1 - 0.1 + 0.1*(document_lengths[id]/avdl)
+    fenmu =1 - 0.2 + 0.2*(document_lengths[id]/avdl)
     k = 1
-    similarity = 0.0
+    similarity = 0.00
     
     unique_query = set(query)
     for term in unique_query:
@@ -222,7 +221,7 @@ def similarity_BM25(query,id):
             C_wd = postings[term][id]
             #使用ln(1+ln(C(w,d)+1))后发现相关性的分数都为负数很小
             similarity += (query.count(term)*(k+1)*C_wd*math.log((document_numbers+1)/document_frequency[term]))/(k*fenmu+C_wd)            
-        
+            
     return similarity
 
 
