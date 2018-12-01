@@ -12,7 +12,7 @@ from textblob import Word
 from sklearn.externals import joblib
 
 
-ground_truth = []    #每条推特的正确聚类标签
+ground_truth = []                   #每条推特的正确聚类标签
 tweets_list = []                    #处理过的推特内容列表
 tweet_num = 0                       #推特总数目
 
