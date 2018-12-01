@@ -9,6 +9,7 @@ from sklearn.cluster import KMeans
 from collections import defaultdict
 from textblob import TextBlob
 from textblob import Word
+from sklearn.externals import joblib
 
 
 ground_truth = []    #每条推特的正确聚类标签
@@ -85,10 +86,10 @@ def Kmeans_cluter():
     所以最好是False
     '''
     
-    tfidf_matrix = tfidf_vectorizer.fit_transform(tweets_list)
+    #tfidf_matrix = tfidf_vectorizer.fit_transform(tweets_list)
     #上面一行代码等价于下面两行代码
-    #tfidf_vectorizer.fit(text_list)
-    #tfidf_matrix = tfidf_vectorizer.transform(text_list)
+    tfidf_vectorizer.fit(tweets_list)
+    tfidf_matrix = tfidf_vectorizer.transform(tweets_list)
     
  
     num_clusters = max(ground_truth)  #与原本标签类别数目保持一致，其实并不合理
@@ -105,10 +106,18 @@ def Kmeans_cluter():
     服务器上面有20个CPU可以开40个进程，最终只会开10个进程
     '''
     #返回各自文本的所被分配到的类索引
-    result = km_cluster.fit_predict(tfidf_matrix)
+    #result = km_cluster.fit_predict(tfidf_matrix)
     #上面一行代码等价于下面两行代码
-    #km_cluster.fit(tfidf_matrix)
-    #result = km_cluster.predict(tfidf_matrix)
+    km_cluster.fit(tfidf_matrix)
+    result = km_cluster.predict(tfidf_matrix)
+    
+    joblib.dump(tfidf_matrix, 'tfidf_matrix.pkl')
+    joblib.dump(tfidf_vectorizer, 'tfidf_fit_result.pkl')
+    joblib.dump(km_cluster, 'km_cluster_fit_result.pkl')
+ 
+    #程序下一次则可以直接load
+#    tfidf_vectorizer = joblib.load('tfidf_fit_result.pkl')
+#    km_cluster = joblib.load('km_cluster_fit_result.pkl')
      
     print ("Predicting result length: ", len(result))
     
