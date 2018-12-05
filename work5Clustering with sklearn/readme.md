@@ -1,4 +1,5 @@
 __Homework5: Clustering with sklearn__  
+__请查看cluter_based_sklearn.py代码__  
 	
 **The Tweets dataset is in format of JSON like follows:**  
 {"text": "centrepoint winter white gala london", "cluster": 65}  
